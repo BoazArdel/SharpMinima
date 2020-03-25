@@ -1,4 +1,7 @@
 from __future__ import print_function
+import ctypes
+
+hllDll = ctypes.WinDLL("C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin\\cudart64_101.dll")
 from keras.datasets import cifar10, cifar100
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
@@ -10,6 +13,7 @@ from keras.layers.normalization import BatchNormalization
 import numpy
 import matplotlib.pyplot as plt
 import tensorflow as tf
+
 
 img_size = (3, 32, 32)
 tf.config.experimental.list_physical_devices('GPU')
