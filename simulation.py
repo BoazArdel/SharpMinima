@@ -1,7 +1,5 @@
 from __future__ import print_function
 import ctypes
-
-hllDll = ctypes.WinDLL("C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v10.1\\bin\\cudart64_101.dll")
 from keras.datasets import cifar10, cifar100
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
@@ -13,40 +11,40 @@ from keras.layers.normalization import BatchNormalization
 import numpy
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import keras.backend as K
 
-
+K.set_image_dim_ordering('th')
 img_size = (3, 32, 32)
-tf.config.experimental.list_physical_devices('GPU')
 
 def kerasnet(nb_classes):
-        model = Sequential()
-        model.add(Convolution2D(32, 3, 3, border_mode='valid',
-                                input_shape=(3,32,32)))
-        model.add(BatchNormalization(mode=0,axis=1))
-        model.add(Activation('relu'))
-        model.add(Convolution2D(32, 3, 3))
-        model.add(BatchNormalization(mode=0,axis=1))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Convolution2D(64, 3, 3, border_mode='valid'))
-        model.add(BatchNormalization(mode=0,axis=1))
-        model.add(Activation('relu'))
-        model.add(Convolution2D(64, 3, 3))
-        model.add(BatchNormalization(mode=0,axis=1))
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Flatten())
-        model.add(Dense(512))
-        model.add(BatchNormalization(mode=0))
-        model.add(Activation('relu'))
-        model.add(Dense(nb_classes))
-        model.add(Activation('softmax'))
-        return model
+    model = Sequential()
+
+    model.add(Convolution2D(32, 3, 3, border_mode='same',input_shape=(3, 32, 32)))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(32, 3, 3))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+
+    model.add(Convolution2D(64, 3, 3, border_mode='same'))
+    model.add(Activation('relu'))
+    model.add(Convolution2D(64, 3, 3))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+
+    model.add(Flatten())
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(nb_classes))
+    model.add(Activation('softmax'))
+    return model
 
 #######################################
 (X_train, y_train), (X_test, y_test) = cifar100.load_data()
 nb_classes = 100
-nb_epoch = 20
+nb_epoch = 2
 
 X_train = X_train.astype('float32')
 X_test = X_test.astype('float32')
@@ -61,10 +59,10 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 model = kerasnet(nb_classes)
 
 # let's train the model using Adam
-model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.save_weights('x0.h5')
+
+#model.compile(loss='categorical_crossentropy',optimizer=sgd,metrics=['accuracy'])
 
 # let's first find the small-batch solution
 model.fit(X_train, Y_train,
@@ -72,7 +70,8 @@ model.fit(X_train, Y_train,
           nb_epoch=nb_epoch,
           validation_data=(X_test, Y_test),
           shuffle=True)
-sb_solution = [p.get_value() for p in model.trainable_weights]
+          
+sb_solution = model
 
 # re-compiling to reset the optimizer accumulators
 model.compile(loss='categorical_crossentropy',
@@ -86,23 +85,21 @@ model.fit(X_train, Y_train,
           batch_size=5000,
           nb_epoch=nb_epoch,
           validation_data=(X_test, Y_test))
-lb_solution = [p.get_value() for p in model.trainable_weights]
-
+lb_solution = model
 # parametric plot data collection
 # we discretize the interval [-1,2] into 25 pieces
 alpha_range = numpy.linspace(-1, 2, 25)
 data_for_plotting = numpy.zeros((25, 4))
 
+train_xent, train_acc = lb_solution = model.evaluate(X_train, Y_train,batch_size=5000, verbose=0)
+test_xent, test_acc = lb_solution.evaluate(X_test, Y_test,batch_size=5000, verbose=0)
+train_xent2, train_acc2 = sb_solution = model.evaluate(X_train, Y_train,batch_size=5000, verbose=0)
+test_xent2, test_acc2 = sb_solution.evaluate(X_test, Y_test,batch_size=5000, verbose=0)
+
 i = 0
 for alpha in alpha_range:
-    for p in range(len(sb_solution)):
-        model.trainable_weights[p].set_value(lb_solution[p]*alpha +
-                                             sb_solution[p]*(1-alpha))
-    train_xent, train_acc = model.evaluate(X_train, Y_train,
-                                           batch_size=5000, verbose=0)
-    test_xent, test_acc = model.evaluate(X_test, Y_test,
-                                         batch_size=5000, verbose=0)
-    data_for_plotting[i, :] = [train_xent, train_acc, test_xent, test_acc]
+
+    data_for_plotting[i, :] = [train_xent*alpha + train_xent2*(1-alpha), train_acc*alpha + train_acc2*(1-alpha), test_xent*alpha + test_xent2*(1-alpha), test_acc*alpha + test_acc2*(1-alpha)]
     i += 1
 
 # finally, let's plot the data
