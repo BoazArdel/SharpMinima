@@ -64,8 +64,8 @@ Y_test = np_utils.to_categorical(y_test, nb_classes)
 model = kerasnet(nb_classes)
 
 ##Graph - 1##
-Index_num = 10
-data_for_plotting = numpy.zeros((Index_num-1, 4))
+Index_num = 30
+data_for_plotting = np.zeros((Index_num-1, 4))
 # let's train the model using Adam
 model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])
 model.save_weights('x0.h5')
@@ -95,7 +95,6 @@ ax2.plot(range(1,Index_num), data_for_plotting[:, 3], 'r-')
 
 ax1.grid(b=True, which='both')
 plt.savefig('Graph1.pdf')
-
 
 ##Graph - 2##
 Noise_Precentage = [0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5]
