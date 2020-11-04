@@ -1,0 +1,66 @@
+ip install -r requirements.txt
+C:\Users\boaza>pip show torch
+Name: torch
+Version: 1.4.0
+Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+Home-page: https://pytorch.org/
+Author: PyTorch Team
+Author-email: packages@pytorch.org
+License: BSD-3
+Location: d:\programfiles\python37\lib\site-packages
+Requires:
+Required-by: torchvision
+
+C:\Users\boaza>nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2018 NVIDIA Corporation
+Built on Sat_Aug_25_21:08:04_Central_Daylight_Time_2018
+Cuda compilation tools, release 10.0, V10.0.130
+
+C:\Users\boaza>pip show keras
+Name: Keras
+Version: 2.4.3
+Summary: Deep Learning for humans
+Home-page: https://github.com/keras-team/keras
+Author: Francois Chollet
+Author-email: francois.chollet@gmail.com
+License: MIT
+Location: d:\programfiles\python37\lib\site-packages
+Requires: pyyaml, numpy, scipy, h5py
+Required-by:
+
+C:\Users\boaza>pip show numpy
+Name: numpy
+Version: 1.17.0
+Summary: NumPy is the fundamental package for array computing with Python.
+Home-page: https://www.numpy.org
+Author: Travis E. Oliphant et al.
+Author-email: None
+License: BSD
+Location: d:\programfiles\python37\lib\site-packages
+Requires:
+Required-by: torchvision, Theano, tensorflow, tensorflow-gpu, tensorboard, seaborn, scipy, scikit-learn, PyWavelets, Pydap, pandas, opt-einsum, opencv-python, matplotlib, Keras, Keras-Preprocessing, Keras-Applications, imageio, h5py, Extract
+
+C:\Users\boaza>pip show tensorflow
+Name: tensorflow
+Version: 1.15.2
+Summary: TensorFlow is an open source machine learning framework for everyone.
+Home-page: https://www.tensorflow.org/
+Author: Google Inc.
+Author-email: packages@tensorflow.org
+License: Apache 2.0
+Location: d:\programfiles\python37\lib\site-packages
+Requires: astor, gast, opt-einsum, tensorflow-estimator, absl-py, wrapt, keras-applications, wheel, six, google-pasta, protobuf, grpcio, keras-preprocessing, numpy, termcolor, tensorboard
+Required-by:
+
+C:\Users\boaza>pip show matplotlib
+Name: matplotlib
+Version: 3.1.1
+Summary: Python plotting package
+Home-page: https://matplotlib.org
+Author: John D. Hunter, Michael Droettboom
+Author-email: matplotlib-users@python.org
+License: PSF
+Location: d:\programfiles\python37\lib\site-packages
+Requires: pyparsing, python-dateutil, numpy, cycler, kiwisolver
+Required-by: seaborn
